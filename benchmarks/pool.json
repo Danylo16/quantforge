@@ -1,0 +1,31 @@
+{
+  "n": 10000,
+  "candidates": 6,
+  "bars_pickle_bytes": 760222,
+  "samples": [
+    {
+      "workers": 1,
+      "seconds": 0.08744213800002854
+    },
+    {
+      "workers": 1,
+      "seconds": 0.09411564199996292
+    },
+    {
+      "workers": 1,
+      "seconds": 0.09151618499998904
+    },
+    {
+      "workers": 2,
+      "seconds": 0.3395514720000392
+    },
+    {
+      "workers": 2,
+      "seconds": 0.3299610189999953
+    },
+    {
+      "workers": 2,
+      "seconds": 0.26927753399996845
+    }
+  ]
+}

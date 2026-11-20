@@ -1,0 +1,190 @@
+{
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "cpu": "AMD EPYC 9V74 80-Core Processor",
+  "numpy": "2.3.5",
+  "workers": 1,
+  "warmup": 1000,
+  "samples": [
+    {
+      "repeat": 0,
+      "n": 10000,
+      "engine": "event",
+      "seconds": 0.018024556000000302,
+      "rows_s": 554798.6868580747,
+      "peak_process_kib": 27008,
+      "final": 7538.0,
+      "fills": 499
+    },
+    {
+      "repeat": 0,
+      "n": 10000,
+      "engine": "array",
+      "seconds": 0.019465826999976343,
+      "rows_s": 513720.78874491964,
+      "peak_process_kib": 27448,
+      "final": 7538.0,
+      "fills": 499
+    },
+    {
+      "repeat": 1,
+      "n": 10000,
+      "engine": "event",
+      "seconds": 0.025651087999960964,
+      "rows_s": 389847.0115581537,
+      "peak_process_kib": 27064,
+      "final": 7538.0,
+      "fills": 499
+    },
+    {
+      "repeat": 1,
+      "n": 10000,
+      "engine": "array",
+      "seconds": 0.018193174999964867,
+      "rows_s": 549656.6707031241,
+      "peak_process_kib": 27448,
+      "final": 7538.0,
+      "fills": 499
+    },
+    {
+      "repeat": 2,
+      "n": 10000,
+      "engine": "event",
+      "seconds": 0.015331370000012612,
+      "rows_s": 652257.4303530457,
+      "peak_process_kib": 27060,
+      "final": 7538.0,
+      "fills": 499
+    },
+    {
+      "repeat": 2,
+      "n": 10000,
+      "engine": "array",
+      "seconds": 0.01749905700000909,
+      "rows_s": 571459.3649243389,
+      "peak_process_kib": 27444,
+      "final": 7538.0,
+      "fills": 499
+    },
+    {
+      "repeat": 0,
+      "n": 100000,
+      "engine": "event",
+      "seconds": 0.24157803600002126,
+      "rows_s": 413944.9167472791,
+      "peak_process_kib": 64688,
+      "final": 102.0,
+      "fills": 4998
+    },
+    {
+      "repeat": 0,
+      "n": 100000,
+      "engine": "array",
+      "seconds": 0.1962577410000108,
+      "rows_s": 509534.0417680365,
+      "peak_process_kib": 68448,
+      "final": 102.0,
+      "fills": 4998
+    },
+    {
+      "repeat": 1,
+      "n": 100000,
+      "engine": "event",
+      "seconds": 0.18055816399999003,
+      "rows_s": 553838.1526742015,
+      "peak_process_kib": 64688,
+      "final": 102.0,
+      "fills": 4998
+    },
+    {
+      "repeat": 1,
+      "n": 100000,
+      "engine": "array",
+      "seconds": 0.20542039600002227,
+      "rows_s": 486806.5778628387,
+      "peak_process_kib": 68444,
+      "final": 102.0,
+      "fills": 4998
+    },
+    {
+      "repeat": 2,
+      "n": 100000,
+      "engine": "event",
+      "seconds": 0.17787405400002854,
+      "rows_s": 562195.540896504,
+      "peak_process_kib": 64688,
+      "final": 102.0,
+      "fills": 4998
+    },
+    {
+      "repeat": 2,
+      "n": 100000,
+      "engine": "array",
+      "seconds": 0.20645153100002744,
+      "rows_s": 484375.1921606564,
+      "peak_process_kib": 68440,
+      "final": 102.0,
+      "fills": 4998
+    },
+    {
+      "repeat": 0,
+      "n": 1000000,
+      "engine": "event",
+      "seconds": 2.339083900999981,
+      "rows_s": 427517.7985588676,
+      "peak_process_kib": 455984,
+      "final": 107.0,
+      "fills": 49998
+    },
+    {
+      "repeat": 0,
+      "n": 1000000,
+      "engine": "array",
+      "seconds": 2.7796746859999644,
+      "rows_s": 359754.3284602955,
+      "peak_process_kib": 501276,
+      "final": 107.0,
+      "fills": 49998
+    },
+    {
+      "repeat": 1,
+      "n": 1000000,
+      "engine": "event",
+      "seconds": 2.4601361729999667,
+      "rows_s": 406481.5643032348,
+      "peak_process_kib": 455860,
+      "final": 107.0,
+      "fills": 49998
+    },
+    {
+      "repeat": 1,
+      "n": 1000000,
+      "engine": "array",
+      "seconds": 2.7833606739999937,
+      "rows_s": 359277.90794101096,
+      "peak_process_kib": 501416,
+      "final": 107.0,
+      "fills": 49998
+    },
+    {
+      "repeat": 2,
+      "n": 1000000,
+      "engine": "event",
+      "seconds": 2.406081190000009,
+      "rows_s": 415613.5728736553,
+      "peak_process_kib": 455852,
+      "final": 107.0,
+      "fills": 49998
+    },
+    {
+      "repeat": 2,
+      "n": 1000000,
+      "engine": "array",
+      "seconds": 2.535187690999976,
+      "rows_s": 394448.112678222,
+      "peak_process_kib": 501340,
+      "final": 107.0,
+      "fills": 49998
+    }
+  ]
+}

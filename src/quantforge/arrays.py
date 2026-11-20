@@ -55,9 +55,7 @@ def simulate_array(
         raise ValueError("empty dataset")
     close = np.fromiter((b.close for b in bars), dtype=float, count=len(bars))
     target = targets(close, name, size, fast, slow)
-    opened = np.fromiter((b.open for b in bars), dtype=float, count=len(bars))
-    buys = opened * (1 + config.slip)
-    sells = opened * (1 - config.slip)
+    del close
     result = Result([], [], [])
     cash = config.capital
     position = 0
@@ -68,7 +66,7 @@ def simulate_array(
             raise ValueError("unordered bars")
         change = desired - position
         if change:
-            price = float(buys[i] if change > 0 else sells[i])
+            price = bar.open * (1 + config.slip if change > 0 else 1 - config.slip)
             notional = change * price
             fee = config.fixed + abs(notional) * config.rate
             remaining = cash - notional - fee
@@ -95,8 +93,12 @@ def simulate_array(
                 result.fills.append(Fill(bar.timestamp, change, price, fee))
         equity = cash + position * bar.close
         unrealised = position * (bar.close - basis)
-        if not all(
-            math.isfinite(v) for v in (basis, realised, fees, equity, unrealised)
+        if not (
+            math.isfinite(equity)
+            and math.isfinite(unrealised)
+            and math.isfinite(realised)
+            and math.isfinite(fees)
+            and math.isfinite(basis)
         ):
             raise ValueError("accounting overflow")
         result.marks.append(
