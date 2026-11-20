@@ -50,7 +50,7 @@ Every backtest writes [risk and trade metrics](docs/analytics.md). Pass `--perio
 
 ## Array execution
 
-Use `--engine array` with the four built-in strategies. NumPy computes price-based targets; the ledger prices orders on demand. The fill ledger runs independently in chronological order because previous rejections affect later quantities. Both engines return identical audit record types. SMA preserves rolling addition order and mean reversion uses compensated window sums to keep threshold decisions consistent. Array storage adds O(n) working memory to the O(n) audit history. Custom callable strategies use the event engine.
+Use `--engine array` with the four built-in strategies. NumPy computes price-based targets; the ledger prices orders on demand. The fill ledger runs independently in chronological order because previous rejections affect later quantities. Both engines return identical audit record types. SMA uses rolling sums with O(1) updates after warm-up. Mean reversion uses compensated window sums; its event-engine mean calculation is O(L) for a window of length L. This maintains consistent threshold decisions. Array storage adds O(n) working memory to the O(n) audit history. Custom callable strategies use the event engine.
 
 ## Chronological research
 
@@ -63,7 +63,7 @@ Use `--engine array` with the four built-in strategies. NumPy computes price-bas
 | Does monthly S&P 500 dependence survive shuffling? | [Historical study, source and figure](experiments/README.md) |
 | How sensitive is SMA to the training window parameters? | [Experiment script](experiments/strategies.py) and [machine-readable holdout report](experiments/strategy-study.json) |
 | How fast are full-audit simulations at one million bars? | [Methodology, hardware and raw measurements](benchmarks/README.md) |
-| How is the system organised? | [Architecture, release notes and interview questions](docs/release.md) |
+| How is the system organised? | [Architecture and release notes](docs/release.md) |
 
 ![Simulated equity, drawdown and parameter sensitivity](experiments/strategies.svg)
 
