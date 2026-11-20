@@ -1,0 +1,9 @@
+coverage==7.17.3
+hypothesis==6.170.17
+mypy==2.4.1
+pyarrow==26.0.1
+pytest==9.2.0
+pytest-cov==7.1.0
+ruff==0.17.6
+setuptools==84.2.1
+tzdata==2026.6

@@ -1,0 +1,80 @@
+import argparse
+import csv
+import hashlib
+import json
+import tempfile
+from collections.abc import Iterable
+from pathlib import Path
+
+from .data import generate, load
+from .engine import Config, Fill, Mark, Order, simulate, strategy
+
+
+def digest(path: Path) -> str:
+    with path.open("rb") as handle:
+        return hashlib.file_digest(handle, "sha256").hexdigest()
+
+
+def save(
+    path: Path, fields: tuple[str, ...], rows: Iterable[tuple[object, ...]]
+) -> None:
+    with path.open("x", newline="") as handle:
+        writer = csv.writer(handle)
+        writer.writerow(fields)
+        writer.writerows(rows)
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser()
+    commands = parser.add_subparsers(dest="cmd", required=True)
+    gen = commands.add_parser("generate")
+    gen.add_argument("output", type=Path)
+    gen.add_argument("--count", type=int, default=1000)
+    gen.add_argument("--seed", type=int, default=42)
+    run = commands.add_parser("backtest")
+    run.add_argument("input", type=Path)
+    run.add_argument("output", type=Path)
+    run.add_argument("--strategy", choices=["buy-hold", "sma"], default="sma")
+    run.add_argument("--units", type=int, default=1)
+    run.add_argument("--fast", type=int, default=5)
+    run.add_argument("--slow", type=int, default=20)
+    run.add_argument("--timezone")
+    run.add_argument("--calendar", type=Path)
+    for name, default in (("capital", 10000), ("fixed", 0), ("rate", 0), ("slip", 0)):
+        run.add_argument("--" + name, type=float, default=default)
+    args = parser.parse_args()
+    if args.cmd == "generate":
+        generate(args.output, args.count, args.seed)
+        return
+    if args.output.exists():
+        parser.error("output already exists")
+    bars = load(args.input, args.timezone, args.calendar)
+    model = strategy(args.strategy, args.units, args.fast, args.slow)
+    result = simulate(
+        bars, model, Config(args.capital, args.fixed, args.rate, args.slip)
+    )
+    args.output.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(dir=args.output.parent) as temporary:
+        folder = Path(temporary) / "result"
+        folder.mkdir()
+        save(folder / "equity.csv", Mark._fields, result.marks)
+        save(folder / "orders.csv", Order._fields, result.orders)
+        save(folder / "fills.csv", Fill._fields, result.fills)
+        metadata = dict(
+            vars(args),
+            version="0.1.1",
+            input_sha256=digest(args.input),
+            calendar_sha256=digest(args.calendar) if args.calendar else None,
+            completeness="checked" if args.calendar else "unchecked",
+        )
+        (folder / "manifest.json").write_text(
+            json.dumps(metadata, default=str, indent=2)
+        )
+        folder.rename(args.output)
+    print(
+        f"{len(bars)} bars, {len(result.fills)} fills, final equity {result.marks[-1].equity:.9g}"
+    )
+
+
+if __name__ == "__main__":
+    main()
