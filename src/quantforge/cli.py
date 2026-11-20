@@ -7,6 +7,7 @@ from collections.abc import Iterable
 from pathlib import Path
 
 from .analytics import analyse
+from .arrays import simulate_array
 from .data import generate, load
 from .engine import Config, Fill, Mark, Order, simulate, strategy
 
@@ -40,6 +41,7 @@ def main() -> None:
         choices=["buy-hold", "sma", "momentum", "mean-reversion"],
         default="sma",
     )
+    run.add_argument("--engine", choices=["event", "array"], default="event")
     run.add_argument("--units", type=int, default=1)
     run.add_argument("--fast", type=int, default=5)
     run.add_argument("--slow", type=int, default=20)
@@ -56,10 +58,15 @@ def main() -> None:
     if args.output.exists():
         parser.error("output already exists")
     bars = load(args.input, args.timezone, args.calendar)
-    model = strategy(args.strategy, args.units, args.fast, args.slow)
-    result = simulate(
-        bars, model, Config(args.capital, args.fixed, args.rate, args.slip)
-    )
+    config = Config(args.capital, args.fixed, args.rate, args.slip)
+    if args.engine == "array":
+        result = simulate_array(
+            bars, args.strategy, args.units, args.fast, args.slow, config
+        )
+    else:
+        result = simulate(
+            bars, strategy(args.strategy, args.units, args.fast, args.slow), config
+        )
     args.output.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(dir=args.output.parent) as temporary:
         folder = Path(temporary) / "result"
@@ -73,7 +80,7 @@ def main() -> None:
         )
         metadata = dict(
             vars(args),
-            version="0.2.0",
+            version="0.3.0",
             input_sha256=digest(args.input),
             calendar_sha256=digest(args.calendar) if args.calendar else None,
             completeness="checked" if args.calendar else "unchecked",

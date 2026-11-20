@@ -47,3 +47,7 @@ CI runs these checks on pushes and pull requests. Python 3.12 is the tested inte
 No exchange calendar is bundled. Supply a point-in-time schedule. Splits, dividends, interest, queue position, liquidity limits and intrabar fills are outside the model. Use one coherent OHLC adjustment basis and document it at source. A current constituent universe can introduce survivorship bias. Only the synthetic fixture ships here.
 
 Version 0.2 implements risk metrics, closed-trade statistics, momentum and mean reversion. See [formulas and conventions](docs/analytics.md). M4 adds an independent array engine. M5 covers chronological research and parallel optimisation. M6 measures million-bar performance and audits numerical boundaries. M7 packages measured research results. See docs/decisions.md.
+
+## Array execution
+
+Use `--engine array` with the four built-in strategies. NumPy computes momentum masks and slippage-adjusted candidate prices. The fill ledger runs independently in chronological order because previous rejections affect later quantities. Both engines return identical audit record types. SMA preserves rolling addition order and mean reversion uses compensated window sums to keep threshold decisions consistent. Array storage adds O(n) working memory to the O(n) audit history. Custom callable strategies use the event engine.

@@ -4,9 +4,9 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "quantforge"
-version = "0.2.0"
+version = "0.3.0"
 requires-python = ">=3.12"
-dependencies = ["pyarrow>=15,<27", "tzdata"]
+dependencies = ["pyarrow>=15,<27", "tzdata", "numpy>=2,<3"]
 description = "Deterministic single-asset OHLCV strategy simulator"
 
 [project.optional-dependencies]
