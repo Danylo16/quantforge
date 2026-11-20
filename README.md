@@ -1,7 +1,16 @@
 # QuantForge
-Single-asset, long-only OHLCV simulation in Python 3.12. Version 0.1.1 is the first end-to-end milestone. It records each close target, next-open order, fill and end-of-bar balance.
+[![CI on Linux and Windows](https://github.com/Danylo16/quantforge/actions/workflows/check.yml/badge.svg?branch=main)](https://github.com/Danylo16/quantforge/actions/workflows/check.yml)
 
-## Trace a trade
+QuantForge is a Python 3.12 backtesting engine for long-only strategies on a single asset. A strategy reads a completed price bar and sets a target position. The engine can fill the order at the next open, checks available cash after slippage and fees, and records the balance at each close.
+
+## Reproduce the four-session example
+
+From the repository root, run these commands in a Python 3.12 environment:
+
+```shell
+python -m pip install -e ".[dev]"
+quantforge backtest examples/golden.csv runs/demo --strategy buy-hold --units 4 --capital 100 --fixed 1
+```
 
 The four-session fixture opens at 10 after the first close at 8. A buy-and-hold target of four units uses 40 of the initial 100 plus a fee of 1. The final close is 9, leaving 59 in cash and 36 in inventory.
 
@@ -14,14 +23,12 @@ The four-session fixture opens at 10 after the first close at 8. A buy-and-hold 
 
 The [accounting tests](tests/test_core.py) also sell the position in two steps and compare generated target sequences against a separate decimal ledger. The [design decisions](docs/decisions.md) cover execution timing, cost basis and numerical precision.
 
-## Run
-Install with `python -m pip install -e ".[dev]"`. Run from the checkout:
+The run writes `orders.csv`, `fills.csv`, `equity.csv` and `manifest.json` to a new output directory. To try a moving-average crossover on reproducible synthetic data:
 
-    quantforge backtest examples/golden.csv runs/demo --strategy buy-hold --units 4 --capital 100 --fixed 1
-    quantforge generate synthetic.csv --count 10000 --seed 42
-    quantforge backtest synthetic.csv runs/sma --strategy sma --fast 10 --slow 40
-
-Output directories must be new. Read equity.csv, orders.csv, fills.csv and manifest.json. The included four-bar example finishes buy-and-hold at 95. The changing targets [4,2,0,0] in the accounting regression finish at 101.
+```shell
+quantforge generate synthetic.csv --count 10000 --seed 42
+quantforge backtest synthetic.csv runs/sma --strategy sma --fast 10 --slow 40
+```
 
 ## Input
 CSV and Parquet require timestamp, open, high, low, close and volume. Column order is free. Prices are finite and strictly positive. Bars must be unique, chronological and internally consistent. Supply --timezone for naive timestamps. Use offsets at ambiguous DST transitions. --calendar expects one ISO session label per line for the complete input range. Without it, completeness is unchecked. The generator emits continuous UTC minute bars with volume and no intrabar excursions beyond open and close. Generated paths serve as workloads, not calibrated market models.
