@@ -25,12 +25,16 @@ def analyse(
     if not marks:
         raise ValueError("empty equity series")
     equity = [m.equity for m in marks]
-    if any(e <= 0 or not math.isfinite(e) for e in equity):
-        raise ValueError("expected positive finite equity")
+    if equity[0] <= 0 or any(e < 0 or not math.isfinite(e) for e in equity):
+        raise ValueError(
+            "expected positive opening equity and finite nonnegative marks"
+        )
     values: dict[str, float | int | None] = {}
     reasons: dict[str, str] = {}
 
     def record(key: str, value: float | None, reason: str) -> None:
+        if value is not None and not math.isfinite(value):
+            value, reason = None, "result exceeds float range"
         values[key] = value
         if value is None:
             reasons[key] = reason
@@ -48,7 +52,11 @@ def analyse(
     )
     try:
         growth = (
-            math.expm1((math.log(equity[-1]) - math.log(equity[0])) / years)
+            (
+                -1.0
+                if equity[-1] == 0
+                else math.expm1((math.log(equity[-1]) - math.log(equity[0])) / years)
+            )
             if years
             else None
         )
@@ -60,7 +68,11 @@ def analyse(
         growth / loss if growth is not None and loss else None,
         "requires CAGR and positive drawdown",
     )
-    returns = [(b - a) / a for a, b in itertools.pairwise(equity)]
+    returns = (
+        [(b - a) / a for a, b in itertools.pairwise(equity)]
+        if 0 not in equity[:-1]
+        else []
+    )
     scale = math.sqrt(periods) if periods else None
     vol = stdev(returns) if len(returns) >= 2 else None
     record(
@@ -85,7 +97,11 @@ def analyse(
         mean * scale / downside if downside and scale else None,
         "requires frequency and downside deviation",
     )
-    values["exposure"] = fmean((m.equity - m.cash) / m.equity for m in marks)
+    record(
+        "exposure",
+        fmean((m.equity - m.cash) / m.equity for m in marks) if all(equity) else None,
+        "zero equity at a close",
+    )
     values["turnover"] = math.fsum(
         abs(f.delta) * f.price for f in result.fills
     ) / fmean(equity)

@@ -49,3 +49,20 @@ def test_causal_windows(name, targets):
     for n in range(1, 5):
         model = strategy(name, 1, 1, 2)
         assert [model(b) for b in bars[:n]] == targets[:n]
+
+
+def test_one_year_rf_and_compounding():
+    from datetime import timedelta
+
+    start = datetime(2020, 1, 1, tzinfo=UTC)
+    half_year = timedelta(days=365.2425 / 2)
+    marks = [
+        Mark(start + i * half_year, e, 0, 0, 0, 0, 0, e, 0)
+        for i, e in enumerate([100, 110, 99])
+    ]
+    m = analyse(Result(marks, [], []), 2, 0.0201)["values"]
+    assert m["cagr"] == pytest.approx(-0.01)
+    assert m["calmar"] == pytest.approx(-0.1)
+    assert m["max_drawdown"] == pytest.approx(0.1)
+    assert m["sharpe"] == pytest.approx(-0.1)
+    assert m["sortino"] == pytest.approx(-0.02 / 0.11)

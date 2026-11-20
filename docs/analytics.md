@@ -10,3 +10,8 @@ Exposure averages invested value / equity across bar closes, including the first
 Momentum takes the long target when the current close exceeds the close L bars earlier. Mean reversion takes the long target when the close falls below the arithmetic mean of the preceding L closes. Both use --slow as L and stay flat for the first L closes and on equality. Mean reversion uses an accurate sum of its window, O(L) time per bar. Momentum costs O(1). Both use O(L) state.
 
 Interview checks: Why can total return be zero with positive mean returns? How does a partial exit change trade count? Why can CAGR on a short sample overflow?
+
+## Numerical audit
+The long Decimal test reconstructs the signal and cash ledger from 8,192 prices. Quantities must agree exactly; cash tolerances are 1e-9 absolute and 1e-12 relative. A separate comparison checks every audit record across engines. Prefix checks cover multiple points on this path. A wiped-out account has total return and elapsed-time CAGR of -1. Exposure is undefined at a zero-equity close. A return following zero equity makes the period-return series undefined.
+
+The ledger uses strict binary64 affordability. Threshold decisions depend on the represented floats. Decimal fractions within an ulp of available cash may produce different accept/reject decisions from exact decimal currency arithmetic. The array engine requires target quantities representable in signed int64. Both engines reject overflow in cash and valuation. Reconciliation tests on representable inputs bound observed error; they do not establish a universal error bound.
