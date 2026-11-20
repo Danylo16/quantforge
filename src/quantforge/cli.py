@@ -6,6 +6,7 @@ import tempfile
 from collections.abc import Iterable
 from pathlib import Path
 
+from .analytics import analyse
 from .data import generate, load
 from .engine import Config, Fill, Mark, Order, simulate, strategy
 
@@ -34,10 +35,16 @@ def main() -> None:
     run = commands.add_parser("backtest")
     run.add_argument("input", type=Path)
     run.add_argument("output", type=Path)
-    run.add_argument("--strategy", choices=["buy-hold", "sma"], default="sma")
+    run.add_argument(
+        "--strategy",
+        choices=["buy-hold", "sma", "momentum", "mean-reversion"],
+        default="sma",
+    )
     run.add_argument("--units", type=int, default=1)
     run.add_argument("--fast", type=int, default=5)
     run.add_argument("--slow", type=int, default=20)
+    run.add_argument("--periods-per-year", type=float)
+    run.add_argument("--risk-free", type=float, default=0.0)
     run.add_argument("--timezone")
     run.add_argument("--calendar", type=Path)
     for name, default in (("capital", 10000), ("fixed", 0), ("rate", 0), ("slip", 0)):
@@ -60,9 +67,13 @@ def main() -> None:
         save(folder / "equity.csv", Mark._fields, result.marks)
         save(folder / "orders.csv", Order._fields, result.orders)
         save(folder / "fills.csv", Fill._fields, result.fills)
+        metrics = analyse(result, args.periods_per_year, args.risk_free)
+        (folder / "metrics.json").write_text(
+            json.dumps(metrics, indent=2, allow_nan=False)
+        )
         metadata = dict(
             vars(args),
-            version="0.1.1",
+            version="0.2.0",
             input_sha256=digest(args.input),
             calendar_sha256=digest(args.calendar) if args.calendar else None,
             completeness="checked" if args.calendar else "unchecked",

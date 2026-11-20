@@ -22,6 +22,23 @@ def strategy(name: str, size: int, fast: int, slow: int) -> Strategy:
     units(size)
     if name == "buy-hold":
         return lambda bar: size
+    if name in {"momentum", "mean-reversion"}:
+        if slow < 1:
+            raise ValueError("lookback must be positive")
+        window: deque[float] = deque(maxlen=slow)
+
+        def signal(bar: Bar) -> int:
+            target = 0
+            if len(window) == slow:
+                if name == "momentum":
+                    enter = bar.close > window[0]
+                else:
+                    enter = bar.close < math.fsum(window) / slow
+                target = size if enter else 0
+            window.append(bar.close)
+            return target
+
+        return signal
     if name != "sma" or not 0 < fast < slow:
         raise ValueError("SMA requires 0 < fast < slow")
     short: deque[float] = deque()

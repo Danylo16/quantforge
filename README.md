@@ -46,4 +46,4 @@ CI runs these checks on pushes and pull requests. Python 3.12 is the tested inte
 ## Limits and next milestones
 No exchange calendar is bundled. Supply a point-in-time schedule. Splits, dividends, interest, queue position, liquidity limits and intrabar fills are outside the model. Use one coherent OHLC adjustment basis and document it at source. A current constituent universe can introduce survivorship bias. Only the synthetic fixture ships here.
 
-M3 adds risk analytics and strategies. M4 adds an independent array engine. M5 covers chronological research and parallel optimisation. M6 measures million-bar performance and audits numerical boundaries. M7 packages measured research results. See docs/decisions.md.
+Version 0.2 implements risk metrics, closed-trade statistics, momentum and mean reversion. See [formulas and conventions](docs/analytics.md). M4 adds an independent array engine. M5 covers chronological research and parallel optimisation. M6 measures million-bar performance and audits numerical boundaries. M7 packages measured research results. See docs/decisions.md.
