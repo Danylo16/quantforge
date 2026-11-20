@@ -46,7 +46,7 @@ def analyse(
         loss = max(loss, (peak - e) / peak)
     values["max_drawdown"] = loss
     total = (equity[-1] - equity[0]) / equity[0]
-    values["total_return"] = total
+    record("total_return", total, "result exceeds float range")
     years = (marks[-1].timestamp - marks[0].timestamp).total_seconds() / (
         86400 * 365.2425
     )
@@ -73,6 +73,8 @@ def analyse(
         if 0 not in equity[:-1]
         else []
     )
+    if any(not math.isfinite(r) for r in returns):
+        returns = []
     scale = math.sqrt(periods) if periods else None
     vol = stdev(returns) if len(returns) >= 2 else None
     record(
@@ -85,8 +87,12 @@ def analyse(
         if periods
         else []
     )
-    mean = fmean(excess) if excess else 0.0
-    downside = math.sqrt(fmean(min(0.0, x) ** 2 for x in excess)) if excess else 0.0
+    mean = math.fsum(x / len(excess) for x in excess) if excess else 0.0
+    downside = (
+        math.hypot(*(min(0.0, x) for x in excess)) / math.sqrt(len(excess))
+        if excess
+        else 0.0
+    )
     record(
         "sharpe",
         mean * scale / vol if vol and scale else None,

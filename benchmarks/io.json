@@ -1,0 +1,110 @@
+[
+  {
+    "rows": 10000,
+    "format": ".csv",
+    "seconds": 0.05266954900002929,
+    "bytes": 1058188
+  },
+  {
+    "rows": 10000,
+    "format": ".csv",
+    "seconds": 0.0607906960000264,
+    "bytes": 1058188
+  },
+  {
+    "rows": 10000,
+    "format": ".csv",
+    "seconds": 0.06680574400002115,
+    "bytes": 1058188
+  },
+  {
+    "rows": 10000,
+    "format": ".parquet",
+    "seconds": 0.10332327999992685,
+    "bytes": 467939
+  },
+  {
+    "rows": 10000,
+    "format": ".parquet",
+    "seconds": 0.10496607300001415,
+    "bytes": 467939
+  },
+  {
+    "rows": 10000,
+    "format": ".parquet",
+    "seconds": 0.11360098500006188,
+    "bytes": 467939
+  },
+  {
+    "rows": 100000,
+    "format": ".csv",
+    "seconds": 0.6473432550000098,
+    "bytes": 10661477
+  },
+  {
+    "rows": 100000,
+    "format": ".csv",
+    "seconds": 0.6272222759999977,
+    "bytes": 10661477
+  },
+  {
+    "rows": 100000,
+    "format": ".csv",
+    "seconds": 0.6304164069999842,
+    "bytes": 10661477
+  },
+  {
+    "rows": 100000,
+    "format": ".parquet",
+    "seconds": 1.080623347000028,
+    "bytes": 4607974
+  },
+  {
+    "rows": 100000,
+    "format": ".parquet",
+    "seconds": 1.1085596500000747,
+    "bytes": 4607974
+  },
+  {
+    "rows": 100000,
+    "format": ".parquet",
+    "seconds": 1.1835719350000318,
+    "bytes": 4607974
+  },
+  {
+    "rows": 1000000,
+    "format": ".csv",
+    "seconds": 7.110838746000013,
+    "bytes": 106451498
+  },
+  {
+    "rows": 1000000,
+    "format": ".csv",
+    "seconds": 7.514671399000008,
+    "bytes": 106451498
+  },
+  {
+    "rows": 1000000,
+    "format": ".csv",
+    "seconds": 7.706347570999924,
+    "bytes": 106451498
+  },
+  {
+    "rows": 1000000,
+    "format": ".parquet",
+    "seconds": 11.632598712000004,
+    "bytes": 38470906
+  },
+  {
+    "rows": 1000000,
+    "format": ".parquet",
+    "seconds": 11.881392651000056,
+    "bytes": 38470906
+  },
+  {
+    "rows": 1000000,
+    "format": ".parquet",
+    "seconds": 12.100933957999928,
+    "bytes": 38470906
+  }
+]

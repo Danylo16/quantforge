@@ -82,7 +82,7 @@ def main() -> None:
             args.validation,
             args.objective,
         )
-        report.update(input_sha256=digest(args.input), version="0.4.0")
+        report.update(input_sha256=digest(args.input), version="1.0.0")
         with args.output.open("x") as file:
             json.dump(report, file, indent=2, allow_nan=False)
         return
@@ -114,7 +114,7 @@ def main() -> None:
         )
         metadata = dict(
             vars(args),
-            version="0.4.0",
+            version="1.0.0",
             input_sha256=digest(args.input),
             calendar_sha256=digest(args.calendar) if args.calendar else None,
             completeness="checked" if args.calendar else "unchecked",

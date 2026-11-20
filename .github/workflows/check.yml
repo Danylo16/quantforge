@@ -16,3 +16,19 @@ jobs:
       - run: mypy src
       - run: pytest --cov=quantforge --cov-fail-under=90
       - run: quantforge backtest examples/golden.csv runs/golden --strategy buy-hold --capital 100 --units 4 --fixed 1
+  release:
+    needs: check
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && github.event.head_commit.message == 'Release QuantForge v1.0.0'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip wheel --no-deps . -w dist
+      - name: Publish tested wheel and release notes
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create v1.0.0 dist/*.whl --target "$GITHUB_SHA" --title "QuantForge 1.0.0" --notes-file docs/release.md

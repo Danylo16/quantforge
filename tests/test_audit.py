@@ -71,3 +71,13 @@ def test_extreme_values():
         simulate(bars, strategy("buy-hold", 2, 1, 2), Config(1e308))
     with pytest.raises(ValueError, match="int64"):
         simulate_array(bars, "buy-hold", 2**64, 1, 2, Config())
+
+
+def test_decimal_boundary_is_documented():
+    bars = path([0.1, 0.1])
+    cfg = Config(0.3)
+    # In binary64, .1 times three is above the cash balance.
+    expected = simulate(bars, strategy("buy-hold", 3, 1, 2), cfg)
+    assert expected.orders[0].status == "insufficient_cash"
+    assert expected == simulate_array(bars, "buy-hold", 3, 1, 2, cfg)
+    assert Decimal(".1") * 3 == Decimal(".3")

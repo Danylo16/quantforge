@@ -43,15 +43,28 @@ Call load(path, zone, calendar), construct a fresh strategy(name, size, fast, sl
 
 CI runs these checks on pushes and pull requests. Python 3.12 is the tested interpreter. PyArrow provides Parquet decoding. CSV and the accounting loop use the standard library. requirements-tested.txt records versions used for the local checks.
 
-## Limits and next milestones
+## Market assumptions
 No exchange calendar is bundled. Supply a point-in-time schedule. Splits, dividends, interest, queue position, liquidity limits and intrabar fills are outside the model. Use one coherent OHLC adjustment basis and document it at source. A current constituent universe can introduce survivorship bias. Only the synthetic fixture ships here.
 
-Version 0.2 implements risk metrics, closed-trade statistics, momentum and mean reversion. See [formulas and conventions](docs/analytics.md). M4 adds an independent array engine. M5 covers chronological research and parallel optimisation. M6 measures million-bar performance and audits numerical boundaries. M7 packages measured research results. See docs/decisions.md.
+Every backtest writes [risk and trade metrics](docs/analytics.md). Pass `--periods-per-year` to annualise period returns and `--risk-free` for the annual effective rate.
 
 ## Array execution
 
-Use `--engine array` with the four built-in strategies. NumPy computes momentum masks and slippage-adjusted candidate prices. The fill ledger runs independently in chronological order because previous rejections affect later quantities. Both engines return identical audit record types. SMA preserves rolling addition order and mean reversion uses compensated window sums to keep threshold decisions consistent. Array storage adds O(n) working memory to the O(n) audit history. Custom callable strategies use the event engine.
+Use `--engine array` with the four built-in strategies. NumPy computes price-based targets; the ledger prices orders on demand. The fill ledger runs independently in chronological order because previous rejections affect later quantities. Both engines return identical audit record types. SMA preserves rolling addition order and mean reversion uses compensated window sums to keep threshold decisions consistent. Array storage adds O(n) working memory to the O(n) audit history. Custom callable strategies use the event engine.
 
 ## Chronological research
 
 `quantforge research synthetic.csv study.json --train 6000 --validation 2000 --workers 2 --objective return` expands the training prefix through consecutive validation blocks. Each block starts flat with fresh indicators. The final candidate is fitted on the train-plus-validation prefix, then evaluated once on the remaining bars. Objectives maximize total return or minimize drawdown. Equal scores take the first sorted candidate. The manifest records half-open row ranges, the input hash, costs and every candidate score in grid order. Small blocks can end before warm-up completes.
+
+## Research and performance
+
+| Question | Reproduce and inspect |
+|---|---|
+| Does monthly S&P 500 dependence survive shuffling? | [Historical study, source and figure](experiments/README.md) |
+| How sensitive is SMA to the training window parameters? | [Experiment script](experiments/strategies.py) and [machine-readable holdout report](experiments/strategy-study.json) |
+| How fast are full-audit simulations at one million bars? | [Methodology, hardware and raw measurements](benchmarks/README.md) |
+| How is the system organised? | [Architecture, release notes and interview questions](docs/release.md) |
+
+![Simulated equity, drawdown and parameter sensitivity](experiments/strategies.svg)
+
+To reproduce the figures install the research dependencies with `python -m pip install -e ".[research]"`. Run `python experiments/strategies.py` from the repository root. The synthetic comparison uses the same starting balance, size and costs across strategies. Its performance figures describe the generated workload.

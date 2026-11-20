@@ -13,3 +13,13 @@ On Linux, run the following from the checkout. The engine runner creates each de
 Momentum periodically changes its target on a deterministic 40-bar sawtooth. Each million-row run produced equity 107 and 49,998 fills. Complexity is O(n) time and audit storage; the event momentum indicator uses O(L) auxiliary memory, while array signals use O(n). On 100k bars cProfile attributed 0.141 s internal time across 606,000 calls to the finite-check generator, versus 0.008 s inside target construction including warm-up. The revised loop checks finite values directly and computes the slipped price only on order submission. Million-row array median runtime changed from 2.780 to 2.185 s and median peak process RSS from 489.6 to 459.2 MiB. The optimized array path was slower than the event path on 100k rows.
 
 For six candidates on 10k bars, a spawned two-worker pool took a median 0.330 s versus 0.092 s sequentially. The serialized bar list was 760,222 bytes. The 0.238 s excess wall time combines dispatch, startup, serialization and parallel work. It is not an isolated serialization measurement. Each worker receives its own copy. See pool.json for repetitions.
+
+## Validated ingestion
+
+Run `python benchmarks/io.py` on Linux. Equivalent seeded data is written in CSV and typed Parquet, then decoded and validated through the public loader. Each format has one warm-up and three measured loads per size; these figures include Python Bar construction. Raw times and file sizes are in io.json.
+
+| Bars | CSV median s | Parquet median s |
+|---:|---:|---:|
+| 10,000 | 0.061 | 0.105 |
+| 100,000 | 0.630 | 1.109 |
+| 1,000,000 | 7.515 | 11.881 |

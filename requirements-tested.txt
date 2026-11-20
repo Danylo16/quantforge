@@ -7,3 +7,4 @@ pytest-cov==7.1.0
 ruff==0.17.6
 setuptools==84.2.1
 tzdata==2026.6
+numpy==2.3.5
