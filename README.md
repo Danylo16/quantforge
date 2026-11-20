@@ -51,3 +51,7 @@ Version 0.2 implements risk metrics, closed-trade statistics, momentum and mean 
 ## Array execution
 
 Use `--engine array` with the four built-in strategies. NumPy computes momentum masks and slippage-adjusted candidate prices. The fill ledger runs independently in chronological order because previous rejections affect later quantities. Both engines return identical audit record types. SMA preserves rolling addition order and mean reversion uses compensated window sums to keep threshold decisions consistent. Array storage adds O(n) working memory to the O(n) audit history. Custom callable strategies use the event engine.
+
+## Chronological research
+
+`quantforge research synthetic.csv study.json --train 6000 --validation 2000 --workers 2 --objective return` expands the training prefix through consecutive validation blocks. Each block starts flat with fresh indicators. The final candidate is fitted on the train-plus-validation prefix, then evaluated once on the remaining bars. Objectives maximize total return or minimize drawdown. Equal scores take the first sorted candidate. The manifest records half-open row ranges, the input hash, costs and every candidate score in grid order. Small blocks can end before warm-up completes.

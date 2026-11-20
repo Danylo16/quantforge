@@ -10,6 +10,7 @@ from .analytics import analyse
 from .arrays import simulate_array
 from .data import generate, load
 from .engine import Config, Fill, Mark, Order, simulate, strategy
+from .research import experiment, grid
 
 
 def digest(path: Path) -> str:
@@ -51,7 +52,40 @@ def main() -> None:
     run.add_argument("--calendar", type=Path)
     for name, default in (("capital", 10000), ("fixed", 0), ("rate", 0), ("slip", 0)):
         run.add_argument("--" + name, type=float, default=default)
+    research = commands.add_parser("research")
+    research.add_argument("input", type=Path)
+    research.add_argument("output", type=Path)
+    research.add_argument("--train", type=int, required=True)
+    research.add_argument("--validation", type=int, required=True)
+    research.add_argument("--workers", type=int, default=1)
+    research.add_argument("--slow", type=int, nargs="+", default=[10, 20, 40])
+    research.add_argument("--fast", type=int, nargs="+", default=[2, 5])
+    research.add_argument(
+        "--strategies", nargs="+", default=["sma", "momentum", "mean-reversion"]
+    )
+    research.add_argument(
+        "--objective", choices=["return", "drawdown"], default="return"
+    )
+    research.add_argument("--units", type=int, default=1)
+    for name, default in (("capital", 10000), ("fixed", 0), ("rate", 0), ("slip", 0)):
+        research.add_argument("--" + name, type=float, default=default)
     args = parser.parse_args()
+    if args.cmd == "research":
+        universe = grid(args.strategies, args.fast, args.slow)
+        report = experiment(
+            load(args.input),
+            universe,
+            Config(args.capital, args.fixed, args.rate, args.slip),
+            args.units,
+            args.workers,
+            args.train,
+            args.validation,
+            args.objective,
+        )
+        report.update(input_sha256=digest(args.input), version="0.4.0")
+        with args.output.open("x") as file:
+            json.dump(report, file, indent=2, allow_nan=False)
+        return
     if args.cmd == "generate":
         generate(args.output, args.count, args.seed)
         return
@@ -80,7 +114,7 @@ def main() -> None:
         )
         metadata = dict(
             vars(args),
-            version="0.3.0",
+            version="0.4.0",
             input_sha256=digest(args.input),
             calendar_sha256=digest(args.calendar) if args.calendar else None,
             completeness="checked" if args.calendar else "unchecked",
